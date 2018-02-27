@@ -1,4 +1,5 @@
 [PARAMS]
 k = 10
-train_file = "C:\Users\ASUS\Documents\PW\MSI\Data\data.simple.train.100.csv"
+train_file = C:\Users\ASUS\Documents\PW\MSI\Data\data.simple.train.100.csv
 test_ratio = 0.1
+do_validation = True

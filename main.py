@@ -7,7 +7,7 @@ import numpy as np
 
 
 def load_data(path, test_ratio):
-    with open("C:\\Users\\ASUS\Documents\\PW\\MSI\\Data\\data.simple.train.100.csv", 'r') as csvfile:
+    with open(path, 'r') as csvfile:
         data_reader = csv.reader(csvfile)
         data = []
         test_data = []
@@ -40,7 +40,7 @@ def knn(train_data, instance, k):
         distances.append((train_row[2], dist))
 
     distances.sort(key=lambda x: x[1])
-    neighbours = distances[0:int(k)]
+    neighbours = distances[0:k]
 
     classes = {}
     for neighbour in neighbours:
@@ -76,7 +76,7 @@ def main():
     params = config["PARAMS"]
     train_file = str(params["train_file"])
     test_ratio = float(params["test_ratio"])
-    k = params["k"]
+    k = int(params["k"])
     do_validation = bool(params["do_validation"])
 
     print("{},\n{},\n{}".format(train_file, test_ratio, k))
