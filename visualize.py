@@ -14,19 +14,7 @@ def visualize(train_data, test_data, k, mesh_step):
 
     num_of_classes = max(test_data, key=itemgetter(-1))[-1]
 
-    cmap_light = []
-    cmap_bold = []
-
-    for i in range(num_of_classes):
-        r = lambda: random.randint(0, 255)
-        color = ('#%02X%02X%02X' % (r(), r(), r()))
-        cmap_light.append(color)
-
-    for i in range(len(cmap_light)):
-        cmap_bold.append(colorscale(cmap_light[i], 1.5))
-
-    cmap_light = ListedColormap(cmap_light)
-    cmap_bold = ListedColormap(cmap_bold)
+    cmap_bold, cmap_light = generate_colors_per_class(num_of_classes)
 
     all_x = [row[0] for row in train_data]
     all_y = [row[1] for row in train_data]
@@ -64,6 +52,20 @@ def visualize(train_data, test_data, k, mesh_step):
     plt.ylim(yy.min(), yy.max())
     plt.title("Visualize it.")
     plt.show()
+
+
+def generate_colors_per_class(num_of_classes):
+    cmap_light = []
+    cmap_bold = []
+    for i in range(num_of_classes):
+        r = lambda: random.randint(0, 255)
+        color = ('#%02X%02X%02X' % (r(), r(), r()))
+        cmap_light.append(color)
+    for i in range(len(cmap_light)):
+        cmap_bold.append(colorscale(cmap_light[i], 1.5))
+    cmap_light = ListedColormap(cmap_light)
+    cmap_bold = ListedColormap(cmap_bold)
+    return cmap_bold, cmap_light
 
 
 def clamp(val, minimum=0, maximum=255):
