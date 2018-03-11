@@ -1,10 +1,11 @@
 import configparser
 import csv
-
 import math
 import operator
 import numpy as np
-
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+import visualize as V
 
 def load_data(path, test_ratio):
     with open(path, 'r') as csvfile:
@@ -62,7 +63,7 @@ def test(train_data, test_data, k):
             correct_answers += 1
         else:
             wrong_answers += 1
-
+    
     print("Correct: {}, Wrong: {}".format(correct_answers, wrong_answers))
 
 
@@ -77,8 +78,10 @@ def main():
     train_file = str(params["train_file"])
     test_ratio = float(params["test_ratio"])
     k = int(params["k"])
+    mesh_step = float(params["mesh_step"])
     do_validation = bool(params["do_validation"])
-
+    do_visulization = bool(params["do_visulization"])
+    
     print("{},\n{},\n{}".format(train_file, test_ratio, k))
 
     train_data, test_data = load_data(train_file, test_ratio)
@@ -87,6 +90,10 @@ def main():
 
     if do_validation:
         test(train_data, test_data, k)
+
+    if do_visulization:
+        #this will draw classes and plot testing points
+        V.visualize(train_data, test_data, k, mesh_step);
 
 
 if __name__ == '__main__':
