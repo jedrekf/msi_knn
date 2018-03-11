@@ -2,10 +2,9 @@ import configparser
 import csv
 import math
 import operator
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
+
 import visualize as V
+
 
 def load_data(path, test_ratio):
     with open(path, 'r') as csvfile:
@@ -29,8 +28,8 @@ def load_data(path, test_ratio):
 
 def calc_dist(instance1, instance2):
     distance = 0
-    distance += pow((instance1[0] - instance2[1]), 2)
-    distance += pow((instance1[0] - instance2[1]), 2)
+    distance += pow((instance1[0] - instance2[0]), 2)
+    distance += pow((instance1[1] - instance2[1]), 2)
     return math.sqrt(distance)
 
 
@@ -54,11 +53,14 @@ def knn(train_data, instance, k):
 
 
 def test(train_data, test_data, k):
+    all_ret_classes = []
     correct_answers = 0
     wrong_answers = 0
+
     for test_instance in test_data:
         answer_class = test_instance[2]
         ret_class = knn(train_data, (test_instance[0], test_instance[1]), k)
+        all_ret_classes.append(ret_class)
         if answer_class == ret_class:
             correct_answers += 1
         else:
@@ -66,11 +68,12 @@ def test(train_data, test_data, k):
     
     print("Correct: {}, Wrong: {}".format(correct_answers, wrong_answers))
 
+    return all_ret_classes, correct_answers / (correct_answers + wrong_answers)
 
 def main():
     config = configparser.ConfigParser()
 
-    if len(config.read("config")) == 0:
+    if len(config.read("config.example")) == 0:
         print("Configuration file was not found!\n")
         return
 
@@ -81,19 +84,29 @@ def main():
     mesh_step = float(params["mesh_step"])
     do_validation = bool(params["do_validation"])
     do_visulization = bool(params["do_visulization"])
-    
-    print("{},\n{},\n{}".format(train_file, test_ratio, k))
+
+    print("train file {},\ntest ratio {},\nk parameter {}".format(train_file, test_ratio, k))
 
     train_data, test_data = load_data(train_file, test_ratio)
 
-    print(len(test_data), len(train_data))
+    num_of_classes = max(test_data, key=operator.itemgetter(-1))[-1]
+
+    print("Length of test data: {}, train data: {}".format(len(test_data), len(train_data)))
+    different_results = []
+    for i in range(1, 10):
+        result = test(train_data, test_data, i)
+        guessed_classes = result[0]
+        accuracy = result[1]
+        different_results.append((guessed_classes, accuracy, i))
+
+    best_result = max(different_results, key=operator.itemgetter(1))
 
     if do_validation:
-        test(train_data, test_data, k)
+        print(best_result[1])
 
     if do_visulization:
         #this will draw classes and plot testing points
-        V.visualize(train_data, test_data, k, mesh_step);
+        V.visualize(best_result[0], train_data, test_data, num_of_classes, mesh_step);
 
 
 if __name__ == '__main__':

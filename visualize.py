@@ -1,6 +1,5 @@
 import configparser
 import random
-from operator import itemgetter
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,10 +8,8 @@ from matplotlib.colors import ListedColormap
 from main import load_data, knn
 
 
-def visualize(train_data, test_data, k, mesh_step):
+def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_step):
     # colors for visualization - should be generated based on number of classes
-
-    num_of_classes = max(test_data, key=itemgetter(-1))[-1]
 
     cmap_bold, cmap_light = generate_colors_per_class(num_of_classes)
 
@@ -31,13 +28,8 @@ def visualize(train_data, test_data, k, mesh_step):
 
     point_classes = []
     for x, y in zip(xx.ravel(), yy.ravel()):
-        mesh_point_class = knn(train_data, (x, y), k)
+        mesh_point_class = knn(train_data, (x, y), 3)
         point_classes.append(mesh_point_class)
-
-    test_point_classes = []
-    for x, y in zip([row[0] for row in test_data], [row[1] for row in test_data]):
-        mesh_point_class = knn(train_data, (x, y), k)
-        test_point_classes.append(mesh_point_class)
 
     point_classes = np.reshape(point_classes, xx.shape)
 
@@ -45,8 +37,8 @@ def visualize(train_data, test_data, k, mesh_step):
     plt.pcolormesh(xx, yy, point_classes, cmap=cmap_light)
 
     # add drawing test points
-    plt.scatter([row[0] for row in test_data], [row[1] for row in test_data],
-                c=test_point_classes, cmap=cmap_bold, edgecolor='k', s=20)
+    plt.scatter([xVal[0] for xVal in test_data], [yVal[1] for yVal in test_data],
+                c=all_guessed_classes, cmap=cmap_bold, edgecolor='k', s=20)
 
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
