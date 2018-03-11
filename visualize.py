@@ -1,26 +1,44 @@
 import configparser
-import csv
-import numpy as np
+import random
+from operator import itemgetter
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import ListedColormap
+
 from main import load_data, knn
 
+
 def visualize(train_data, test_data, k, mesh_step):
-    #colors for visualization - should be generated based on number of classes
-    cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
-    cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+    # colors for visualization - should be generated based on number of classes
+
+    num_of_classes = max(test_data, key=itemgetter(-1))[-1]
+
+    cmap_light = []
+    cmap_bold = []
+
+    for i in range(num_of_classes):
+        r = lambda: random.randint(0, 255)
+        color = ('#%02X%02X%02X' % (r(), r(), r()))
+        cmap_light.append(color)
+
+    for i in range(len(cmap_light)):
+        cmap_bold.append(colorscale(cmap_light[i], 1.5))
+
+    cmap_light = ListedColormap(cmap_light)
+    cmap_bold = ListedColormap(cmap_bold)
 
     all_x = [row[0] for row in train_data]
     all_y = [row[1] for row in train_data]
-    #get surface boudaries for plotting
+    # get surface boudaries for plotting
     x_min, x_max = min(all_x), max(all_x)
     y_min, y_max = min(all_y), max(all_y)
     # create mesh points from boundary values
-    xx = np.arange(x_min, x_max, mesh_step);
-    yy = np.arange(y_min, y_max, mesh_step);
-    np.append(xx, x_max);
-    np.append(yy, y_max);
-    #create mesh for x's and y's
+    xx = np.arange(x_min, x_max, mesh_step)
+    yy = np.arange(y_min, y_max, mesh_step)
+    np.append(xx, x_max)
+    np.append(yy, y_max)
+    # create mesh for x's and y's
     xx, yy = np.meshgrid(xx, yy)
 
     point_classes = []
@@ -40,12 +58,36 @@ def visualize(train_data, test_data, k, mesh_step):
 
     # add drawing test points
     plt.scatter([row[0] for row in test_data], [row[1] for row in test_data],
-        c=test_point_classes, cmap=cmap_bold, edgecolor='k', s=20)
+                c=test_point_classes, cmap=cmap_bold, edgecolor='k', s=20)
 
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
     plt.title("Visualize it.")
     plt.show()
+
+
+def clamp(val, minimum=0, maximum=255):
+    if val < minimum:
+        return minimum
+    if val > maximum:
+        return maximum
+    return val
+
+
+def colorscale(hexstr, scalefactor):
+    hexstr = hexstr.strip('#')
+
+    if scalefactor < 0 or len(hexstr) != 6:
+        return hexstr
+
+    r, g, b = int(hexstr[:2], 16), int(hexstr[2:4], 16), int(hexstr[4:], 16)
+
+    r = int(clamp(r * scalefactor))
+    g = int(clamp(g * scalefactor))
+    b = int(clamp(b * scalefactor))
+
+    return "#%02x%02x%02x" % (r, g, b)
+
 
 def main():
     config = configparser.ConfigParser()
@@ -60,13 +102,14 @@ def main():
     k = int(params["k"])
     mesh_step = float(params["mesh_step"])
 
-    print("{},\n{},\n{}".format(train_file, test_ratio, k))
+    print("train file {},\ntest ratio {},\nk parameter {}".format(train_file, test_ratio, k))
 
     train_data, test_data = load_data(train_file, test_ratio)
 
     print(len(test_data), len(train_data))
 
     visualize(train_data, test_data, k, mesh_step)
+
 
 if __name__ == '__main__':
     main()
