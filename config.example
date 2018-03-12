@@ -1,7 +1,8 @@
 [PARAMS]
 k = 10
-train_file = C:\Users\ASUS\Documents\PW\MSI\Data\data.simple.train.100.csv
+train_file = C:\Users\picie\Desktop\dane\data.three_gauss.train.1000.csv
 test_ratio = 0.1
 do_validation = True
-do_visulization = True
-mesh_step = 0.2
+do_visulization = False
+use_manhattan = True
+mesh_step = 0.1
