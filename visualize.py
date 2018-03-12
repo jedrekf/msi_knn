@@ -1,14 +1,13 @@
-import configparser
 import random
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
 
-from main import load_data, knn
+from main import knn
 
 
-def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_step):
+def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_step, use_manhattan):
     # colors for visualization - should be generated based on number of classes
 
     cmap_bold, cmap_light = generate_colors_per_class(num_of_classes)
@@ -28,7 +27,7 @@ def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_s
 
     point_classes = []
     for x, y in zip(xx.ravel(), yy.ravel()):
-        mesh_point_class = knn(train_data, (x, y), 3)
+        mesh_point_class = knn(train_data, (x, y), 3, use_manhattan)
         point_classes.append(mesh_point_class)
 
     point_classes = np.reshape(point_classes, xx.shape)
@@ -82,28 +81,27 @@ def colorscale(hexstr, scalefactor):
 
     return "#%02x%02x%02x" % (r, g, b)
 
-
-def main():
-    config = configparser.ConfigParser()
-
-    if len(config.read("config")) == 0:
-        print("Configuration file was not found!\n")
-        return
-
-    params = config["PARAMS"]
-    train_file = str(params["train_file"])
-    test_ratio = float(params["test_ratio"])
-    k = int(params["k"])
-    mesh_step = float(params["mesh_step"])
-
-    print("train file {},\ntest ratio {},\nk parameter {}".format(train_file, test_ratio, k))
-
-    train_data, test_data = load_data(train_file, test_ratio)
-
-    print(len(test_data), len(train_data))
-
-    visualize(train_data, test_data, k, mesh_step)
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     config = configparser.ConfigParser()
+#
+#     if len(config.read("config")) == 0:
+#         print("Configuration file was not found!\n")
+#         return
+#
+#     params = config["PARAMS"]
+#     train_file = str(params["train_file"])
+#     test_ratio = float(params["test_ratio"])
+#     k = int(params["k"])
+#     mesh_step = float(params["mesh_step"])
+#
+#     print("train file {},\ntest ratio {},\nk parameter {}".format(train_file, test_ratio, k))
+#
+#     train_data, test_data = load_data(train_file, test_ratio)
+#
+#     print(len(test_data), len(train_data))
+#
+#     visualize(train_data, test_data, k, mesh_step)
+#
+#
+# if __name__ == '__main__':
+#     main()
