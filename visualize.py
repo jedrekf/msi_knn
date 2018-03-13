@@ -7,7 +7,7 @@ from matplotlib.colors import ListedColormap
 from main import knn
 
 
-def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_step, use_manhattan):
+def visualize(all_guessed_classes, train_data, test_data, k, num_of_classes, mesh_step, use_manhattan):
     # colors for visualization - should be generated based on number of classes
 
     cmap_bold, cmap_light = generate_colors_per_class(num_of_classes)
@@ -26,8 +26,9 @@ def visualize(all_guessed_classes, train_data, test_data, num_of_classes, mesh_s
     xx, yy = np.meshgrid(xx, yy)
 
     point_classes = []
+    knn_instance = knn.KNN(train_data, k, use_manhattan)
     for x, y in zip(xx.ravel(), yy.ravel()):
-        mesh_point_class = knn(train_data, (x, y), 3, use_manhattan)
+        mesh_point_class = knn_instance.compute_class((x, y))
         point_classes.append(mesh_point_class)
 
     point_classes = np.reshape(point_classes, xx.shape)

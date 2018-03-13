@@ -27,43 +27,6 @@ def load_data(path, test_ratio):
         return data, test_data
 
 
-# def calc_dist_euclidean(instance1, instance2):
-#     distance = 0
-#     distance += pow((instance1[0] - instance2[0]), 2)
-#     distance += pow((instance1[1] - instance2[1]), 2)
-#     return distance
-#
-#
-# def calc_dist_manhattan(instance1, instance2):
-#     distance = 0
-#     distance += abs(instance1[0] - instance2[0])
-#     distance += abs(instance1[1] - instance2[1])
-#     return distance
-#
-#
-# def knn(train_data, instance, k, do_manhattan):
-#     distances = measure_distances(instance, train_data, do_manhattan)
-#     neighbours = distances[0:k]
-#
-#     classes = {}
-#     for neighbour in neighbours:
-#         if neighbour[0] in classes:
-#             classes[neighbour[0]] += 1
-#         else:
-#             classes[neighbour[0]] = 1
-#
-#     return max(classes.items(), key=operator.itemgetter(1))[0]
-#
-#
-# def measure_distances(instance, train_data, use_manhattan):
-#     distances = []
-#     for train_row in train_data:
-#         dist = calc_dist_manhattan(train_row, instance) if use_manhattan else calc_dist_euclidean(train_row, instance)
-#         distances.append((train_row[2], dist))
-#     distances.sort(key=lambda x: x[1])
-#     return distances
-
-
 def test(train_data, test_data, k, do_manhattan):
     all_ret_classes = []
     correct_answers = 0
@@ -103,7 +66,6 @@ def main():
     do_validation = config.getboolean(section_name, "do_validation")
     do_visulization = config.getboolean(section_name, "do_visulization")
 
-
     print("train file {},\ntest ratio {},\nk parameter {}".format(train_file, test_ratio, k))
 
     train_data, test_data = load_data(train_file, test_ratio)
@@ -112,13 +74,13 @@ def main():
     start = time.time()
     print("Length of test data: {}, train data: {}".format(len(test_data), len(train_data)))
     different_results = []
-    for i in range(8, 9):
-        result = test(train_data, test_data, i, do_manhattan)
-        guessed_classes = result[0]
-        accuracy = result[1]
-        different_results.append((guessed_classes, accuracy, i))
 
-    best_result = max(different_results, key=operator.itemgetter(1))
+    result = test(train_data, test_data, k, do_manhattan)
+    guessed_classes = result[0]
+    accuracy = result[1]
+    # different_results.append((guessed_classes, accuracy, k))
+
+    best_result = result  # max(different_results, key=operator.itemgetter(1))
 
     if do_validation:
         print(best_result[1])
@@ -128,7 +90,7 @@ def main():
 
     if do_visulization:
         # this will draw classes and plot testing points
-        V.visualize(best_result[0], train_data, test_data, num_of_classes, mesh_step, do_manhattan)
+        V.visualize(best_result[0], train_data, test_data, k, num_of_classes, mesh_step, do_manhattan)
 
 
 if __name__ == '__main__':
