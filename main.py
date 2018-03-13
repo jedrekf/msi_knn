@@ -87,7 +87,7 @@ def test(train_data, test_data, k, do_manhattan):
 def main():
     config = configparser.ConfigParser()
 
-    if len(config.read("config.example")) == 0:
+    if len(config.read("config")) == 0:
         print("Configuration file was not found!\n")
         return
 
