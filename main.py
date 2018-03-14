@@ -78,7 +78,7 @@ def main():
     start = time.time()
     print("Length of test data: {}, train data: {}".format(len(test_data), len(train_data)))
 
-    k_vals = [1, 5, 10, 20, 25, 50, 100]
+    k_vals = [k]
     if do_czebyszew:
         final_metric = czebyszew.Czebyszew.calc_dist
     elif do_manhattan:

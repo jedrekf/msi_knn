@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.colors import ListedColormap
 
 from main import knn
-
+import manhattan as manhattan
 
 def visualize(all_guessed_classes, train_data, test_data, k, num_of_classes, mesh_step, use_manhattan):
     # colors for visualization - should be generated based on number of classes
@@ -26,7 +26,7 @@ def visualize(all_guessed_classes, train_data, test_data, k, num_of_classes, mes
     xx, yy = np.meshgrid(xx, yy)
 
     point_classes = []
-    knn_instance = knn.KNN(train_data, k, use_manhattan)
+    knn_instance = knn.KNN(train_data, k, manhattan.Manhattan.calc_dist)
     for x, y in zip(xx.ravel(), yy.ravel()):
         mesh_point_class = knn_instance.compute_class((x, y))
         point_classes.append(mesh_point_class)
