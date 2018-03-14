@@ -2,11 +2,11 @@ import operator
 
 
 class KNN:
-    def __init__(self, train_data, k, use_manhattan):
+    def __init__(self, train_data, k, metric):
 
         self.train_data = train_data
         self.k = k
-        self.use_manhattan = use_manhattan
+        self.metric = metric
 
     def compute_class(self, instance):
         distances = self.measure_distances(instance)
@@ -24,8 +24,9 @@ class KNN:
     def measure_distances(self, instance):
         distances = []
         for train_row in self.train_data:
-            dist = self.calc_dist_manhattan(train_row, instance) if self.use_manhattan else self.calc_dist_euclidean(
-                train_row, instance)
+            dist = self.metric(train_row, instance)
+            # dist = self.calc_dist_manhattan(train_row, instance) if self.use_manhattan else self.calc_dist_euclidean(
+            #     train_row, instance)
             distances.append((train_row[2], dist))
         distances.sort(key=lambda x: x[1])
         return distances
@@ -41,3 +42,9 @@ class KNN:
         distance += abs(instance1[0] - instance2[0])
         distance += abs(instance1[1] - instance2[1])
         return distance
+
+    def calc_dist_czebyszew(self, instance1, instance2):
+
+        distance1 = abs(instance1[0] - instance2[0])
+        distance2 = abs(instance1[1] - instance2[1])
+        return max(distance1, distance2)

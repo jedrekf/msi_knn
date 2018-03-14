@@ -3,7 +3,10 @@ import csv
 import operator
 import time
 
+import czebyszew as czebyszew
+import euclidean as euclidean
 import knn as knn
+import manhattan as manhattan
 import visualize as V
 
 
@@ -27,12 +30,12 @@ def load_data(path, test_ratio):
         return data, test_data
 
 
-def test(train_data, test_data, k, do_manhattan):
+def test(train_data, test_data, k, metric):
     all_ret_classes = []
     correct_answers = 0
     wrong_answers = 0
 
-    knn_instance = knn.KNN(train_data, k, do_manhattan)
+    knn_instance = knn.KNN(train_data, k, metric)
     for test_instance in test_data:
         answer_class = test_instance[2]
         ret_class = knn_instance.compute_class((test_instance[0], test_instance[1]))
@@ -42,7 +45,7 @@ def test(train_data, test_data, k, do_manhattan):
         else:
             wrong_answers += 1
 
-    print("Correct: {}, Wrong: {}".format(correct_answers, wrong_answers))
+    print("{};{}".format(k, correct_answers / (correct_answers + wrong_answers)))
 
     return all_ret_classes, correct_answers / (correct_answers + wrong_answers)
 
@@ -63,6 +66,7 @@ def main():
     mesh_step = float(params["mesh_step"])
 
     do_manhattan = config.getboolean(section_name, "use_manhattan")
+    do_czebyszew = config.getboolean(section_name, "use_Czebyszew")
     do_validation = config.getboolean(section_name, "do_validation")
     do_visulization = config.getboolean(section_name, "do_visulization")
 
@@ -73,17 +77,23 @@ def main():
     num_of_classes = max(test_data, key=operator.itemgetter(-1))[-1]
     start = time.time()
     print("Length of test data: {}, train data: {}".format(len(test_data), len(train_data)))
-    different_results = []
 
-    result = test(train_data, test_data, k, do_manhattan)
-    guessed_classes = result[0]
-    accuracy = result[1]
-    # different_results.append((guessed_classes, accuracy, k))
+    k_vals = [1, 5, 10, 20, 25, 50, 100]
+    if do_czebyszew:
+        final_metric = czebyszew.Czebyszew.calc_dist
+    elif do_manhattan:
+        final_metric = manhattan.Manhattan.calc_dist
+    else:
+        final_metric = euclidean.Euclidean.calc_dist
 
-    best_result = result  # max(different_results, key=operator.itemgetter(1))
+    result = None
+    for i in k_vals:
+        start = time.time()
+        result = test(train_data, test_data, i, final_metric)
+        end = time.time() - start
+        print(';' + str(end))
 
-    if do_validation:
-        print(best_result[1])
+    best_result = result
 
     end = time.time() - start
     print('end time' + str(end))

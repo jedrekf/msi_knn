@@ -5,4 +5,5 @@ test_ratio = 0.1
 do_validation = True
 do_visulization = True
 use_manhattan = True
+use_Czebyszew = False
 mesh_step = 0.1
